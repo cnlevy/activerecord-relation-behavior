@@ -47,7 +47,7 @@ class EActiveRecordRelationBehavior extends CActiveRecordBehavior
 	public function events()
 	{
 		return array(
-			'onBeforeValidate'=>'beforeValidate',
+//			'onBeforeValidate'=>'beforeValidate',
 			'onBeforeSave'=>'beforeSave',
 			'onAfterSave'=>'afterSave',
 //			'onBeforeDelete'=>'beforeDelete',
@@ -56,11 +56,11 @@ class EActiveRecordRelationBehavior extends CActiveRecordBehavior
 	}
 
 	/**
-	 * Responds to {@link CModel::onBeforeValidate} event.
+	 * Called by {@link beforeSave}.
 	 * @throws CDbException
 	 * @param CModelEvent $event event parameter
 	 */
-	public function beforeValidate($event)
+	public function ensureNoNewRecords()
 	{
 		foreach($this->owner->relations() as $name => $relation)
 		{
@@ -102,6 +102,7 @@ class EActiveRecordRelationBehavior extends CActiveRecordBehavior
 	 */
 	public function beforeSave($event)
 	{
+		$this->ensureNoNewRecords();
 		// ensure transactions
 		if ($this->useTransaction && $this->owner->dbConnection->currentTransaction===null)
 			$this->_transaction=$this->owner->dbConnection->beginTransaction();
